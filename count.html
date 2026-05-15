@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Level 2: Ultimate Workspace Tracker</title>
+  
+  <!-- 1. THE ENGINES (Loaded via CDN for zero-install setup) -->
+  <script src="https://cdn.tailwindcss.com"></script> <!-- Pro UI -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> <!-- Pro Logic -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script> <!-- Physics -->
+
+  <!-- 2. NATIVE CSS FADE (Vue automatically triggers these classes) -->
+  <style>
+    .fade-enter-active, .fade-leave-active {
+      transition: opacity 0.3s ease-in-out;
+    }
+    .fade-enter-from, .fade-leave-to {
+      opacity: 0;
+    }
+  </style>
+</head>
+
+<!-- Center everything on a dark monitor background -->
+<body class="bg-gray-900 min-h-screen flex items-center justify-center font-sans overflow-hidden">
+
+  <!-- THE VUE BOUNDARY: Everything Vue controls MUST live inside here -->
+  <div id="app" class="w-full min-h-screen flex items-center justify-center relative">
+
+    <!-- THE DYNAMIC CARD -->
+    <!-- :class logic: If showFlash is true -> Green. If false -> White. 
+         'transition-colors duration-500' makes the color shift smooth, not instant. -->
+    <div 
+      :class="showFlash ? 'bg-emerald-500' : 'bg-white'" 
+      class="p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 relative z-10 transition-colors duration-500"
+    >
+      
+      <!-- QUOTE CONTAINER -->
+      <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-4 rounded-xl text-center mb-6 shadow-sm">
+        <span class="block text-xs uppercase tracking-widest font-black text-amber-100 mb-1">Current Focus</span>
+        
+        <!-- VUE NATIVE TRANSITION: Fades old quote out, fades new quote in -->
+        <!-- :key forces Vue to treat every new quote as a brand new element -->
+        <transition name="fade" mode="out-in">
+          <p :key="currentQuote" class="text-white font-bold italic text-base leading-snug">
+            "{{ currentQuote }}"
+          </p>
+        </transition>
+      </div>
+      
+      <!-- HEADERS: Colors dynamically shift to stay readable when background turns green -->
+      <h1 :class="showFlash ? 'text-white' : 'text-gray-800'" class="text-2xl font-bold mb-2 transition-colors duration-500">
+        Workspace Tracker
+      </h1>
+      <p :class="showFlash ? 'text-emerald-100' : 'text-gray-500'" class="text-sm mb-6 transition-colors duration-500">
+        Hit the target. Get rewarded instantly.
+      </p>
+      
+      <!-- DATA GLUE: v-model locks the textarea to the 'text' variable -->
+      <textarea 
+        v-model="text" 
+        class="w-full h-24 p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 resize-none mb-6 shadow-inner"
+        placeholder="Type session logs here..."
+      ></textarea>
+
+      <!-- THE TRIGGER: @click fires our custom JavaScript pipeline -->
+      <!-- 'active:scale-95' gives physical tactile feedback when clicked -->
+      <button 
+        @click="triggerRep" 
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-4 px-4 rounded-xl transition duration-200 mb-6 shadow-lg active:scale-95 text-lg"
+      >
+        🏋️‍♂️ Log 1 Rep
+      </button>
+
+      <!-- LIVE METRICS -->
+      <div class="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4 text-center">
+        <div>
+          <span class="block text-xs text-gray-400 uppercase tracking-wider font-bold mb-1">Characters</span>
+          <!-- Automatically calculates string length -->
+          <span :class="showFlash ? 'text-white' : 'text-gray-700'" class="text-2xl font-extrabold transition-colors duration-500">
+            {{ text.length }}
+          </span>
+        </div>
+        <div>
+          <span class="block text-xs text-gray-400 uppercase tracking-wider font-bold mb-1">Total Reps</span>
+          <!-- Automatically displays current rep integer -->
+          <span :class="showFlash ? 'text-emerald-200' : 'text-blue-600'" class="text-2xl font-extrabold transition-colors duration-500">
+            {{ reps }}
+          </span>
+        </div>
+      </div>
+
+    </div> <!-- End Dynamic Card -->
+  </div> <!-- End Vue Boundary -->
+
+  <!-- THE BRAIN -->
+  <script>
+    // Extract required functions from Vue
+    const { createApp, ref } = Vue;
+
+    createApp({
+      setup() {
+        // 1. REACTIVE STATE (Variables that update the UI when changed)
+        const text = ref('');         // Stores textarea input
+        const reps = ref(0);          // Starts rep count at 0
+        const showFlash = ref(false); // Controls background color shift
+
+        // Array of hard-hitting quotes
+        const quotesList = [
+          "No shortcuts. Just execution.",
+          "Earn your break.",
+          "One more rep defines the session.",
+          "Action beats anxiety every single time.",
+          "Keep moving the line forward.",
+          "Raw effort cannot be faked."
+        ];
+
+        // Set default quote
+        const currentQuote = ref(quotesList[0]);
+
+        // 2. THE PIPELINE (Executes sequentially on button click)
+        const triggerRep = () => {
+          reps.value++; // Add 1 to score
+          
+          // Math to grab a random quote from the array
+          const randomIndex = Math.floor(Math.random() * quotesList.length);
+          currentQuote.value = quotesList[randomIndex];
+
+          // Trigger color shift
+          showFlash.value = true;
+          
+          // Fire external physics library
+          confetti({
+            particleCount: 100,
+            spread: 80,
+            origin: { y: 0.6 } // Start slightly lower than center screen
+          });
+
+          // Wait exactly 500 milliseconds, then shift color back to white
+          setTimeout(() => {
+            showFlash.value = false;
+          }, 500);
+        };
+
+        // 3. EXPORT TO HTML (If it's not returned, the HTML can't see it)
+        return { text, reps, showFlash, currentQuote, triggerRep };
+      }
+    }).mount('#app'); // Lock engine to the #app div
+  </script>
+
+</body>
+</html>
