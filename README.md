@@ -2,7 +2,7 @@
 
 A zero-build, high-performance workspace session tracker built to log physical or mental reps while working. Designed with a focus on raw functional utility, immediate visual feedback, and a frictionless user experience.
 
-![UI Preview](https://via.placeholder.com/800x400.png?text=Workspace+Tracker+UI)
+![UI Preview]([https://via.placeholder.com/800x400.png?text=Workspace+Tracker+UI](https://dr-week.github.io/REP-COUNTER-BRO/))
 
 ## ⚡ Core Philosophy
 * **Zero Boilerplate:** Runs entirely from a single file via CDN. No `npm install`, no Webpack, no node_modules.
