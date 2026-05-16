@@ -1,7 +1,7 @@
 # Workspace Tracker
 
 A zero-build, high-performance workspace session tracker built to log physical or mental reps while working. Designed with a focus on raw functional utility, immediate visual feedback, and a frictionless user experience.
-
+https://dr-week.github.io/REP-COUNTER-BRO/
 ![UI Preview]([https://via.placeholder.com/800x400.png?text=Workspace+Tracker+UI](https://dr-week.github.io/REP-COUNTER-BRO/))
 
 ## ⚡ Core Philosophy
